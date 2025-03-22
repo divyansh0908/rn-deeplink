@@ -1,77 +1,133 @@
-# Welcome to your new ignited app!
+# React Native Deeplink Demo App
 
-> The latest and greatest boilerplate for Infinite Red opinions
+A demonstration application showcasing deeplink implementation in React Native. This app allows you to navigate directly to specific screens using custom URL schemes and universal links.
 
-This is the boilerplate that [Infinite Red](https://infinite.red) uses as a way to test bleeding-edge changes to our React Native stack.
+## Features
 
-- [Quick start documentation](https://github.com/infinitered/ignite/blob/master/docs/boilerplate/Boilerplate.md)
-- [Full documentation](https://github.com/infinitered/ignite/blob/master/docs/README.md)
+- **Multiple Screens**: Home, Login, Profile, and Products screens
+- **Deeplink Support**: Navigate directly to screens using custom URL schemes and universal links
+- **Cross-Platform**: Works on both iOS and Android
+
+## Deeplink URLs
+
+The app supports the following deeplink formats:
+
+- Custom URL scheme: `deeplinkapp://profile` or `deeplinkapp://products`
+- App-specific scheme: `com.deeplink.app://profile` or `com.deeplink.app://products`
+- Universal links: `https://appdeeplink.netlify.app/profile` or `https://appdeeplink.netlify.app/products`
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js (v14 or newer)
+- Yarn or npm
+- React Native development environment set up ([React Native Environment Setup Guide](https://reactnative.dev/docs/environment-setup))
+- Xcode (for iOS development)
+- Android Studio (for Android development)
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/divyansh0908/rn-deeplink.git
+cd rn-deeplink
+```
+
+### Install Dependencies
+
 ```bash
 yarn install
-yarn start
+# or
+npm install
 ```
 
-To make things work on your local simulator, or on your phone, you need first to [run `eas build`](https://github.com/infinitered/ignite/blob/master/docs/expo/EAS.md). We have many shortcuts on `package.json` to make it easier:
+### Running the App
+
+#### iOS
 
 ```bash
-yarn build:ios:sim # build for ios simulator
-yarn build:ios:dev # build for ios device
-yarn build:ios:prod # build for ios device
+# Start Metro bundler
+yarn start
+# In a new terminal, run the iOS app
+yarn ios
 ```
 
-### `./assets` directory
+#### Android
 
-This directory is designed to organize and store various assets, making it easy for you to manage and use them in your application. The assets are further categorized into subdirectories, including `icons` and `images`:
-
-```tree
-assets
-├── icons
-└── images
+```bash
+# Start Metro bundler
+yarn start
+# In a new terminal, run the Android app
+yarn android
 ```
 
-**icons**
-This is where your icon assets will live. These icons can be used for buttons, navigation elements, or any other UI components. The recommended format for icons is PNG, but other formats can be used as well.
+## Testing Deeplinks
 
-Ignite comes with a built-in `Icon` component. You can find detailed usage instructions in the [docs](https://github.com/infinitered/ignite/blob/master/docs/boilerplate/app/components/Icon.md).
+### iOS
 
-**images**
-This is where your images will live, such as background images, logos, or any other graphics. You can use various formats such as PNG, JPEG, or GIF for your images.
+#### Using Terminal
 
-Another valuable built-in component within Ignite is the `AutoImage` component. You can find detailed usage instructions in the [docs](https://github.com/infinitered/ignite/blob/master/docs/Components-AutoImage.md).
+You can test deeplinks on iOS simulator using the `xcrun` command:
 
-How to use your `icon` or `image` assets:
-
-```typescript
-import { Image } from 'react-native';
-
-const MyComponent = () => {
-  return (
-    <Image source={require('../assets/images/my_image.png')} />
-  );
-};
+```bash
+# Open the app first, then run:
+xcrun simctl openurl booted "deeplinkapp://profile"
+# or
+xcrun simctl openurl booted "deeplinkapp://products"
 ```
 
-## Running Maestro end-to-end tests
+#### Using Safari
 
-Follow our [Maestro Setup](https://ignitecookbook.com/docs/recipes/MaestroSetup) recipe.
+1. Open Safari on your Mac
+2. Enter the deeplink URL (e.g., `deeplinkapp://profile`)
+3. Safari will prompt you to open the app
 
-## Next Steps
+### Android
 
-### Ignite Cookbook
+#### Using ADB
 
-[Ignite Cookbook](https://ignitecookbook.com/) is an easy way for developers to browse and share code snippets (or “recipes”) that actually work.
+You can test deeplinks on Android emulator or device using ADB:
 
-### Upgrade Ignite boilerplate
+```bash
+# Open the app first, then run:
+adb shell am start -W -a android.intent.action.VIEW -d "deeplinkapp://profile" com.deeplink.app
+# or
+adb shell am start -W -a android.intent.action.VIEW -d "deeplinkapp://products" com.deeplink.app
+```
 
-Read our [Upgrade Guide](https://ignitecookbook.com/docs/recipes/UpdatingIgnite) to learn how to upgrade your Ignite project.
+#### Using Chrome
 
-## Community
+1. Open Chrome on your development machine
+2. Enter the deeplink URL (e.g., `deeplinkapp://profile`)
+3. Chrome will prompt you to open the app
 
-⭐️ Help us out by [starring on GitHub](https://github.com/infinitered/ignite), filing bug reports in [issues](https://github.com/infinitered/ignite/issues) or [ask questions](https://github.com/infinitered/ignite/discussions).
+### Testing Universal Links
 
-💬 Join us on [Slack](https://join.slack.com/t/infiniteredcommunity/shared_invite/zt-1f137np4h-zPTq_CbaRFUOR_glUFs2UA) to discuss.
+To test universal links, you can use the following URLs in a browser:
 
-📰 Make our Editor-in-chief happy by [reading the React Native Newsletter](https://reactnativenewsletter.com/).
+- `https://appdeeplink.netlify.app/profile`
+- `https://appdeeplink.netlify.app/products`
+
+## Project Structure
+
+- `/app`: Main application code
+  - `/app/screens`: Screen components including Profile and Products screens
+  - `/app/navigators`: Navigation configuration
+  - `/app/app.tsx`: Main app component with deeplink configuration
+
+## Built With
+
+- [React Native](https://reactnative.dev/) - The framework used
+- [React Navigation](https://reactnavigation.org/) - Navigation library with deeplink support
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Built with [Ignite](https://github.com/infinitered/ignite) - The hottest React Native boilerplate
