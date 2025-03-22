@@ -33,9 +33,19 @@ import Config from "./config"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 import { loadDateFnsLocale } from "./utils/formatDate"
 
+/**
+ * Key used for persisting navigation state in storage
+ */
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
-// Web linking configuration
+/**
+ * Deep linking configuration
+ *
+ * This configuration defines how URLs map to screens in the app.
+ * It's used by React Navigation to handle deep links.
+ *
+ * @see https://reactnavigation.org/docs/configuring-links
+ */
 const prefix = Linking.createURL("/")
 const config = {
   screens: {
@@ -53,30 +63,44 @@ const config = {
         DemoCommunity: "community",
       },
     },
+    // Deep link paths for Profile and Products screens
+    // These allow direct navigation via URLs like:
+    // - deeplinkapp://profile
+    // - https://appdeeplink.netlify.app/profile
+    Profile: "profile",
+    Products: "products",
   },
 }
 
 /**
  * This is the root component of our app.
- * @param {AppProps} props - The props for the `App` component.
- * @returns {JSX.Element} The rendered `App` component.
+ * It handles initialization of various services and provides
+ * the app with necessary providers and navigation.
+ *
+ * @returns {JSX.Element | null} The rendered App component or null during initialization
  */
 export function App() {
+  // Set up navigation persistence to maintain navigation state across app restarts
   const {
     initialNavigationState,
     onNavigationStateChange,
     isRestored: isNavigationStateRestored,
   } = useNavigationPersistence(storage, NAVIGATION_PERSISTENCE_KEY)
 
+  // Load custom fonts for the app
   const [areFontsLoaded, fontLoadError] = useFonts(customFontsToLoad)
+
+  // Track initialization of internationalization
   const [isI18nInitialized, setIsI18nInitialized] = useState(false)
 
+  // Initialize internationalization and date formatting
   useEffect(() => {
     initI18n()
       .then(() => setIsI18nInitialized(true))
       .then(() => loadDateFnsLocale())
   }, [])
 
+  // Initialize and rehydrate the root store (MobX state)
   const { rehydrated } = useInitialRootStore(() => {
     // This runs after the root store has been initialized and rehydrated.
 
@@ -100,12 +124,17 @@ export function App() {
     return null
   }
 
+  /**
+   * Deep linking configuration object for React Navigation
+   * Includes all supported URL prefixes and the route mapping config
+   */
   const linking = {
-    prefixes: [prefix],
+    // Define all URL schemes that the app can handle
+    prefixes: [prefix, "deeplinkapp://", "com.deeplink.app://", "https://appdeeplink.netlify.app"],
     config,
   }
 
-  // otherwise, we're ready to render the app
+  // Once all initialization is complete, render the app
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <ErrorBoundary catchErrors={Config.catchErrors}>
