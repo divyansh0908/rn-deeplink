@@ -3,6 +3,9 @@
  * navigation flows of your app.
  * Generally speaking, it will contain an auth flow (registration, login, forgot password)
  * and a "main" flow which the user will use once logged in.
+ *
+ * This file defines the main navigation structure of the application and
+ * configures the navigation stack with all available screens.
  */
 import { NavigationContainer, NavigatorScreenParams } from "@react-navigation/native"
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack"
@@ -32,7 +35,9 @@ export type AppStackParamList = {
   Welcome: undefined
   Login: undefined
   Demo: NavigatorScreenParams<DemoTabParamList>
-  // 🔥 Your screens go here
+  // Screens with deeplink support
+  Profile: undefined
+  Products: undefined
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
 
@@ -42,19 +47,30 @@ export type AppStackParamList = {
  */
 const exitRoutes = Config.exitRoutes
 
+/**
+ * Type for props passed to screens in the app stack
+ * This provides proper type checking for navigation props
+ */
 export type AppStackScreenProps<T extends keyof AppStackParamList> = NativeStackScreenProps<
   AppStackParamList,
   T
 >
 
-// Documentation: https://reactnavigation.org/docs/stack-navigator/
+// Create the navigation stack
 const Stack = createNativeStackNavigator<AppStackParamList>()
 
+/**
+ * AppStack component that defines the main navigation structure
+ * This component observes the authentication state and renders
+ * different screens based on whether the user is authenticated
+ */
 const AppStack = observer(function AppStack() {
+  // Get authentication state from the store
   const {
     authenticationStore: { isAuthenticated },
   } = useStores()
 
+  // Get theme colors for styling
   const {
     theme: { colors },
   } = useAppTheme()
@@ -64,36 +80,40 @@ const AppStack = observer(function AppStack() {
       screenOptions={{
         headerShown: false,
         navigationBarColor: colors.background,
-        contentStyle: {
-          backgroundColor: colors.background,
-        },
+        contentStyle: { backgroundColor: colors.background },
       }}
       initialRouteName={isAuthenticated ? "Welcome" : "Login"}
     >
-      {isAuthenticated ? (
-        <>
-          <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
-
-          <Stack.Screen name="Demo" component={DemoNavigator} />
-        </>
-      ) : (
-        <>
-          <Stack.Screen name="Login" component={Screens.LoginScreen} />
-        </>
-      )}
-
-      {/** 🔥 Your screens go here */}
-      {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
+      {/* All screens are available regardless of authentication state */}
+      <>
+        <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
+        <Stack.Screen name="Demo" component={DemoNavigator} />
+        <Stack.Screen name="Profile" component={Screens.ProfileScreen} />
+        <Stack.Screen name="Products" component={Screens.ProductsScreen} />
+      </>
     </Stack.Navigator>
   )
 })
 
+/**
+ * Interface for NavigationProps
+ * Extends the props of NavigationContainer
+ */
 export interface NavigationProps extends Partial<ComponentProps<typeof NavigationContainer>> {}
 
+/**
+ * Main AppNavigator component
+ * Wraps the navigation structure with necessary providers and configuration
+ *
+ * @param props - Props for the NavigationContainer
+ * @returns The configured navigation container
+ */
 export const AppNavigator = observer(function AppNavigator(props: NavigationProps) {
+  // Get theme configuration
   const { themeScheme, navigationTheme, setThemeContextOverride, ThemeProvider } =
     useThemeProvider()
 
+  // Handle back button presses (Android)
   useBackButtonHandler((routeName) => exitRoutes.includes(routeName))
 
   return (
